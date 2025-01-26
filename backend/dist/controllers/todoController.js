@@ -16,7 +16,7 @@ exports.editTodobyId = exports.deleteTodobyId = exports.addNewtodo = exports.get
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const schema_1 = require("../db/schema");
-const JWT_SECRET = process.env.JWT_SECRET;
+const schema_2 = require("../schema/schema");
 const getAlltodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userEmail = req.user.userEmail;
@@ -57,11 +57,16 @@ const getTodobyId = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getTodobyId = getTodobyId;
 const addNewtodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const isValidInputs = schema_2.newTodoSchema.safeParse(req.body);
+        if (!isValidInputs.success) {
+            res.status(411).send({ message: "One or more input is invalid" });
+            return;
+        }
         const { title, description } = req.body;
         const newTodo = yield schema_1.Todo.create({
             title,
             description,
-            userId: req.user.userId
+            userId: req.user.userId,
         });
         res.status(201).send({
             message: "Todo created succesfuly",
@@ -98,6 +103,11 @@ const deleteTodobyId = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.deleteTodobyId = deleteTodobyId;
 const editTodobyId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const isValidInputs = schema_2.editTodoSchema.safeParse(req.body);
+        if (!isValidInputs.success) {
+            res.status(411).send({ message: "One or more input is invalid" });
+            return;
+        }
         const { title, description, isCompleted } = req.body;
         const todoId = req.params.id;
         const todo = yield schema_1.Todo.findById({ _id: todoId });
@@ -108,9 +118,7 @@ const editTodobyId = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         todo.title = title;
         todo.description = title;
         todo.isCompleted = title;
-        res
-            .status(201)
-            .send({
+        res.status(201).send({
             message: "Todo Updated",
             Todo: { title, description, isCompleted },
         });

@@ -1,10 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
 import { Todo, User } from "../db/schema";
-
-const JWT_SECRET = process.env.JWT_SECRET as string;
+import { editTodoSchema, newTodoSchema } from "../schema/schema";
 
 const getAlltodo = async (req: Request, res: Response) => {
   try {
@@ -44,11 +42,16 @@ const getTodobyId = async (req: Request, res: Response) => {
 
 const addNewtodo = async (req: Request, res: Response) => {
   try {
+    const isValidInputs= newTodoSchema.safeParse(req.body)
+    if(!isValidInputs.success){
+      res.status(411).send({message:"One or more input is invalid"})
+      return;
+    }
     const { title, description } = req.body;
     const newTodo = await Todo.create({
       title,
       description,
-      userId:req.user.userId
+      userId: req.user.userId,
     });
     res.status(201).send({
       message: "Todo created succesfuly",
@@ -81,6 +84,11 @@ const deleteTodobyId = async (req: Request, res: Response) => {
 };
 const editTodobyId = async (req: Request, res: Response) => {
   try {
+    const isValidInputs= editTodoSchema.safeParse(req.body)
+    if(!isValidInputs.success){
+      res.status(411).send({message:"One or more input is invalid"})
+      return;
+    }
     const { title, description, isCompleted } = req.body;
     const todoId = req.params.id;
     const todo = await Todo.findById({ _id: todoId });
@@ -92,12 +100,10 @@ const editTodobyId = async (req: Request, res: Response) => {
     todo!.description = title;
     todo!.isCompleted = title;
 
-    res
-      .status(201)
-      .send({
-        message: "Todo Updated",
-        Todo: { title, description, isCompleted },
-      });
+    res.status(201).send({
+      message: "Todo Updated",
+      Todo: { title, description, isCompleted },
+    });
   } catch (e) {
     res.status(400).send({ message: "Error Ocurred" });
   }

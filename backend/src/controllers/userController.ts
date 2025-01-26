@@ -3,6 +3,7 @@ import { User } from "../db/schema";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { userSignInSchema, userSignUpSchema } from "../schema/schema";
 dotenv.config();
 
 const addNewUser = async (
@@ -10,6 +11,12 @@ const addNewUser = async (
   res: Response
 ) => {
   try {
+    const isValidInputs= userSignUpSchema.safeParse(req.body)
+    if(!isValidInputs.success){
+      res.status(411).send({message:"One or more input is invalid"})
+      return;
+
+    }
     const { name, email, password } = await req.body;
     const isEmailExist = await User.findOne({
       email,
@@ -33,6 +40,11 @@ const addNewUser = async (
 
 const signInUser = async (req: Request, res: Response) => {
   try {
+    const isValidInputs= userSignInSchema.safeParse(req.body)
+    if(!isValidInputs.success){
+      res.status(411).send({message:"One or more input is invalid"})
+      return;
+    }
     const { email, password } = await req.body;
     const isUserExist = await User.findOne({
       email,

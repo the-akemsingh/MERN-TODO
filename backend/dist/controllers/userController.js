@@ -17,9 +17,15 @@ const schema_1 = require("../db/schema");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const schema_2 = require("../schema/schema");
 dotenv_1.default.config();
 const addNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const isValidInputs = schema_2.userSignUpSchema.safeParse(req.body);
+        if (!isValidInputs.success) {
+            res.status(411).send({ message: "One or more input is invalid" });
+            return;
+        }
         const { name, email, password } = yield req.body;
         const isEmailExist = yield schema_1.User.findOne({
             email,
@@ -43,6 +49,11 @@ const addNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.addNewUser = addNewUser;
 const signInUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const isValidInputs = schema_2.userSignInSchema.safeParse(req.body);
+        if (!isValidInputs.success) {
+            res.status(411).send({ message: "One or more input is invalid" });
+            return;
+        }
         const { email, password } = yield req.body;
         const isUserExist = yield schema_1.User.findOne({
             email,
