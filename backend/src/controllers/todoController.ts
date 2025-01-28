@@ -1,16 +1,16 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { Request, Response } from "express";
-import { Todo, User } from "../db/schema";
+import { Table } from "../db/schema";
 import { editTodoSchema, newTodoSchema } from "../schema/schema";
 
 const getAlltodo = async (req: Request, res: Response) => {
   try {
     const userEmail = req.user.userEmail;
-    const user = await User.findOne({
+    const user = await Table.User.findOne({
       email: userEmail,
     });
-    const userTodos = await Todo.find({
+    const userTodos = await Table.Todo.find({
       userId: user!._id,
     });
     if (!userTodos) {
@@ -27,7 +27,7 @@ const getAlltodo = async (req: Request, res: Response) => {
 const getTodobyId = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const todo = await Todo.findById({ _id: id });
+    const todo = await Table.Todo.findById({ _id: id });
     if (!todo) {
       res.status(404).send({
         messsage: "Todo not found",
@@ -44,11 +44,11 @@ const addNewtodo = async (req: Request, res: Response) => {
   try {
     const isValidInputs= newTodoSchema.safeParse(req.body)
     if(!isValidInputs.success){
-      res.status(411).send({message:"One or more input is invalid"})
+      res.status(411).send({message:"One or more input is invalid", errors: isValidInputs.error.errors })
       return;
     }
     const { title, description } = req.body;
-    const newTodo = await Todo.create({
+    const newTodo = await Table.Todo.create({
       title,
       description,
       userId: req.user.userId,
@@ -69,12 +69,12 @@ const addNewtodo = async (req: Request, res: Response) => {
 const deleteTodobyId = async (req: Request, res: Response) => {
   try {
     const todoId = req.params.id;
-    const todo = await Todo.findById({ _id: todoId });
+    const todo = await Table.Todo.findById({ _id: todoId });
     if (!todo) {
       res.status(404).send({ message: "Todo does not exist" });
       return;
     }
-    const deleteTodo = await Todo.findOneAndDelete({
+    const deleteTodo = await Table.Todo.findOneAndDelete({
       _id: todoId,
     });
     res.status(201).send({ message: "Todo Deleted Succesfully" });
@@ -86,12 +86,12 @@ const editTodobyId = async (req: Request, res: Response) => {
   try {
     const isValidInputs= editTodoSchema.safeParse(req.body)
     if(!isValidInputs.success){
-      res.status(411).send({message:"One or more input is invalid"})
+      res.status(411).send({message:"One or more input is invalid", errors: isValidInputs.error.errors })
       return;
     }
     const { title, description, isCompleted } = req.body;
     const todoId = req.params.id;
-    const todo = await Todo.findById({ _id: todoId });
+    const todo = await Table.Todo.findById({ _id: todoId });
     if (!todo) {
       res.status(404).send({ message: "Todo does not exist" });
       return;

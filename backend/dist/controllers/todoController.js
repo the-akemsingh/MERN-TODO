@@ -20,10 +20,10 @@ const schema_2 = require("../schema/schema");
 const getAlltodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userEmail = req.user.userEmail;
-        const user = yield schema_1.User.findOne({
+        const user = yield schema_1.Table.User.findOne({
             email: userEmail,
         });
-        const userTodos = yield schema_1.Todo.find({
+        const userTodos = yield schema_1.Table.Todo.find({
             userId: user._id,
         });
         if (!userTodos) {
@@ -41,7 +41,7 @@ exports.getAlltodo = getAlltodo;
 const getTodobyId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const todo = yield schema_1.Todo.findById({ _id: id });
+        const todo = yield schema_1.Table.Todo.findById({ _id: id });
         if (!todo) {
             res.status(404).send({
                 messsage: "Todo not found",
@@ -59,11 +59,11 @@ const addNewtodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const isValidInputs = schema_2.newTodoSchema.safeParse(req.body);
         if (!isValidInputs.success) {
-            res.status(411).send({ message: "One or more input is invalid" });
+            res.status(411).send({ message: "One or more input is invalid", errors: isValidInputs.error.errors });
             return;
         }
         const { title, description } = req.body;
-        const newTodo = yield schema_1.Todo.create({
+        const newTodo = yield schema_1.Table.Todo.create({
             title,
             description,
             userId: req.user.userId,
@@ -86,12 +86,12 @@ exports.addNewtodo = addNewtodo;
 const deleteTodobyId = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const todoId = req.params.id;
-        const todo = yield schema_1.Todo.findById({ _id: todoId });
+        const todo = yield schema_1.Table.Todo.findById({ _id: todoId });
         if (!todo) {
             res.status(404).send({ message: "Todo does not exist" });
             return;
         }
-        const deleteTodo = yield schema_1.Todo.findOneAndDelete({
+        const deleteTodo = yield schema_1.Table.Todo.findOneAndDelete({
             _id: todoId,
         });
         res.status(201).send({ message: "Todo Deleted Succesfully" });
@@ -105,12 +105,12 @@ const editTodobyId = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const isValidInputs = schema_2.editTodoSchema.safeParse(req.body);
         if (!isValidInputs.success) {
-            res.status(411).send({ message: "One or more input is invalid" });
+            res.status(411).send({ message: "One or more input is invalid", errors: isValidInputs.error.errors });
             return;
         }
         const { title, description, isCompleted } = req.body;
         const todoId = req.params.id;
-        const todo = yield schema_1.Todo.findById({ _id: todoId });
+        const todo = yield schema_1.Table.Todo.findById({ _id: todoId });
         if (!todo) {
             res.status(404).send({ message: "Todo does not exist" });
             return;

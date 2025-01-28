@@ -1,0 +1,1 @@
+{"root":["./src/bin.ts","./src/index.ts","./src/controllers/todocontroller.ts","./src/controllers/usercontroller.ts","./src/db/schema.ts","./src/middlwares/middleware.ts","./src/routers/todorouter.ts","./src/routers/userrouter.ts","./src/schema/schema.ts","./src/tests/index.test.ts"],"version":"5.7.3"}

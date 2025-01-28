@@ -31,7 +31,7 @@ const isAuthorized = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
             return;
         }
         const userEmail = jsonwebtoken_1.default.decode(token);
-        const user = yield schema_1.User.findOne({
+        const user = yield schema_1.Table.User.findOne({
             email: userEmail,
         });
         req.user = { userEmail: user.email, userName: user.name, userId: user.id };

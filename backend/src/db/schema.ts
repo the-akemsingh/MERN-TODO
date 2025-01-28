@@ -28,4 +28,4 @@ const userSchema=new mongoose.Schema({
 const Todo =  mongoose.model('Todos',todoSchema);
 const User =  mongoose.model('Users',userSchema);
 
-export {Todo,User};
+export const Table={Todo,User};

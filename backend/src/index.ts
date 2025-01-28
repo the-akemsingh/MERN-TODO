@@ -3,7 +3,7 @@ import cors from 'cors'
 import userRouter from './routers/userRouter'
 import todoRouter from './routers/todoRouter'
 
-const app=express()
+export const app=express()
 app.use(cors());
 app.use(express.json());
 

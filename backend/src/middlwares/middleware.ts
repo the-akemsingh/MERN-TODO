@@ -2,13 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 dotenv.config();
 import jwt from "jsonwebtoken";
-import { User } from "../db/schema";
+import { Table } from "../db/schema";
 
-// Add this at the top of your file
 declare global {
   namespace Express {
     interface Request {
-      user?: any; // Or define a more specific type for your user
+      user?: any;
     }
   }
 }
@@ -32,7 +31,7 @@ const isAuthorized = async (
       return;
     }
     const userEmail = jwt.decode(token);
-    const user = await User.findOne({
+    const user = await Table.User.findOne({
       email: userEmail,
     });
     req.user = { userEmail: user!.email,userName:user!.name,userId:user!.id };
