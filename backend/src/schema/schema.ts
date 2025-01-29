@@ -6,7 +6,7 @@ export const newTodoSchema = z.object({
 });
 
 export const editTodoSchema = z.object({
-  name: z.string().optional(),
+  title: z.string().optional(),
   description: z.string().optional(),
   isCompleted: z.boolean().optional(),
 });

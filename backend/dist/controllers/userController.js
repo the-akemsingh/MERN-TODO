@@ -62,11 +62,11 @@ const signInUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.status(401).send({ message: "Email is not registered" });
             return;
         }
-        // const isPasswordValid =await bcrypt.compare(password, user!.password as string);
-        // if (!isPasswordValid) {
-        //   res.status(401).send({ message: "Incorrect password" });
-        //   return;
-        // }
+        const isPasswordValid = yield bcrypt_1.default.compare(password, user.password);
+        if (!isPasswordValid) {
+            res.status(401).send({ message: "Incorrect password" });
+            return;
+        }
         const token = jsonwebtoken_1.default.sign(email, process.env.JWT_SECRET);
         res.status(201).send({
             message: "User signed in",

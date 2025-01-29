@@ -19,14 +19,11 @@ const schema_1 = require("../db/schema");
 const schema_2 = require("../schema/schema");
 const getAlltodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const userEmail = req.user.userEmail;
-        const user = yield schema_1.Table.User.findOne({
-            email: userEmail,
-        });
+        const userId = yield req.user.id;
         const userTodos = yield schema_1.Table.Todo.find({
-            userId: user._id,
+            userId,
         });
-        if (!userTodos) {
+        if (userTodos.length == 0) {
             res.status(404).send({ message: "No todos found" });
             return;
         }
@@ -66,7 +63,7 @@ const addNewtodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const newTodo = yield schema_1.Table.Todo.create({
             title,
             description,
-            userId: req.user.userId,
+            userId: req.user.id,
         });
         res.status(201).send({
             message: "Todo created succesfuly",
@@ -74,7 +71,7 @@ const addNewtodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 title,
                 description,
                 isCompleted: false,
-                id: newTodo._id,
+                userId: newTodo._id,
             },
         });
     }
