@@ -34,7 +34,7 @@ const isAuthorized = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         const user = yield schema_1.Table.User.findOne({
             email: userEmail,
         });
-        req.user = { userEmail: user.email, userName: user.name, userId: user.id };
+        req.user = { email: user.email, name: user.name, id: user._id };
         next();
     }
     catch (e) {
